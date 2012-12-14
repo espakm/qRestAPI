@@ -1,6 +1,6 @@
 /*==============================================================================
 
-  Program: qMidasAPI
+  Program: qRestAPI
 
   Copyright (c) 2010 Kitware Inc.
 
@@ -18,46 +18,46 @@
 
 ==============================================================================*/
 
-#ifndef __qMidasAPI_h
-#define __qMidasAPI_h
+#ifndef __qXnatAPI_h
+#define __qXnatAPI_h
 
 #include "qRestAPI.h"
 
-class qMidasAPIPrivate;
+class qXnatAPIPrivate;
 
-/// qMidasAPI is a simple interface class to communicate with a Midas3 public
+/// qXnatAPI is a simple interface class to communicate with a Xnat3 public
 /// API.
 /// Queries are posted to the server and answers reported back.
-/// qMidasAPI works in synchronous or unsynchronous way.
+/// qXnatAPI works in synchronous or unsynchronous way.
 /// Usage:
 /// <code>
-/// qMidasAPI midas;
-/// midas.setMidasUrl("http://slicer.kitware.com/midas3");
+/// qXnatAPI midas;
+/// midas.setXnatUrl("http://slicer.kitware.com/midas3");
 /// connect(&midas, SIGNAL(resultReceived(QUuid,QList<QVariantMap>)),
 ///         myApp, SLOT(processResult(QUuid,QList<QVariantMap>)));
 /// midas.query("midas.version");
 /// ...
 /// </code>
-class qMidasAPI : public qRestAPI
+class qXnatAPI : public qRestAPI
 {
   Q_OBJECT
-  /// Url of the Midas server. e.g. "http://slicer.kitware.com/midas3"
-  Q_PROPERTY(QString midasUrl READ midasUrl WRITE setMidasUrl)
+  /// Url of the Xnat server. e.g. "http://slicer.kitware.com/midas3"
+  Q_PROPERTY(QString midasUrl READ midasUrl WRITE setXnatUrl)
 
 public:
   typedef qRestAPI Superclass;
-  explicit qMidasAPI(QObject*parent = 0);
-  virtual ~qMidasAPI();
+  explicit qXnatAPI(QObject*parent = 0);
+  virtual ~qXnatAPI();
 
   typedef QMap<QString, QString> ParametersType;
   typedef QMap<QByteArray, QByteArray> RawHeadersType;
 
   QString midasUrl()const;
-  void setMidasUrl(const QString& newMidasUrl);
+  void setXnatUrl(const QString& newXnatUrl);
 
 private:
-  Q_DECLARE_PRIVATE(qMidasAPI);
-  Q_DISABLE_COPY(qMidasAPI);
+  Q_DECLARE_PRIVATE(qXnatAPI);
+  Q_DISABLE_COPY(qXnatAPI);
 };
 
 #endif

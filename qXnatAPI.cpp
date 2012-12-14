@@ -1,6 +1,6 @@
 /*==============================================================================
 
-  Program: qMidasAPI
+  Program: qRestAPI
 
   Copyright (c) 2010 Kitware Inc.
 
@@ -28,26 +28,27 @@
 #include <QUuid>
 #include <QDebug>
 
-// qMidasAPI includes
-#include "qMidasAPI.h"
-#include "qMidasAPI_p.h"
+// qXnatAPI includes
+#include "qXnatAPI.h"
+#include "qXnatAPI_p.h"
 
 
 // --------------------------------------------------------------------------
-// qMidasAPIPrivate methods
+// qXnatAPIPrivate methods
 
 // --------------------------------------------------------------------------
-qMidasAPIPrivate::qMidasAPIPrivate(qMidasAPI& object)
+qXnatAPIPrivate::qXnatAPIPrivate(qXnatAPI& object)
   : Superclass(object)
   , q_ptr(&object)
 {
 }
 
 // --------------------------------------------------------------------------
-QUrl qMidasAPIPrivate
-::createUrl(const QString& method, const qMidasAPI::ParametersType& parameters)
+QUrl qXnatAPIPrivate
+::createUrl(const QString& method, const qXnatAPI::ParametersType& parameters)
 {
-  QUrl url(this->ServerUrl + "/api/" + this->ResponseType);
+//  QUrl url(this->XnatUrl + "/api/" + this->ResponseType);
+  QUrl url(this->ServerUrl);
   url.addQueryItem("format", this->ResponseType);
   if (!method.isEmpty())
     {
@@ -61,21 +62,22 @@ QUrl qMidasAPIPrivate
 }
 
 // --------------------------------------------------------------------------
-QList<QVariantMap> qMidasAPIPrivate::parseResult(const QScriptValue& scriptValue)
+QList<QVariantMap> qXnatAPIPrivate::parseResult(const QScriptValue& scriptValue)
 {
-  Q_Q(qMidasAPI);
+  Q_Q(qXnatAPI);
   // e.g. {"ResultSet":{"Result": [{"p1":"v1","p2":"v2",...}], "totalRecords":"13"}}
   QList<QVariantMap> result;
-  QScriptValue stat = scriptValue.property("stat");
-  if (stat.toString() != "ok")
-    {
-    QString error = QString("Error while parsing outputs:") +
-      " status: " + scriptValue.property("stat").toString() +
-      " code: " + scriptValue.property("code").toInteger() +
-      " msg: " + scriptValue.property("message").toString();
-    q->emit errorReceived(error);
-    }
-  QScriptValue data = scriptValue.property("data");
+  QScriptValue resultSet = scriptValue.property("ResultSet");
+//  if (stat.toString() != "ok")
+//    {
+//    QString error = QString("Error while parsing outputs:") +
+//      " status: " + scriptValue.property("stat").toString() +
+//      " code: " + scriptValue.property("code").toInteger() +
+//      " msg: " + scriptValue.property("message").toString();
+//    q->emit errorReceived(error);
+//    }
+  QScriptValue dataLength = resultSet.property("totalRecords");
+  QScriptValue data = resultSet.property("Result");
   if (!data.isObject())
     {
     if (data.toString().isEmpty())
@@ -104,27 +106,27 @@ QList<QVariantMap> qMidasAPIPrivate::parseResult(const QScriptValue& scriptValue
 }
 
 // --------------------------------------------------------------------------
-// qMidasAPI methods
+// qXnatAPI methods
 
 // --------------------------------------------------------------------------
-qMidasAPI::qMidasAPI(QObject* _parent)
-  : Superclass(new qMidasAPIPrivate(*this), _parent)
+qXnatAPI::qXnatAPI(QObject* _parent)
+  : Superclass(new qXnatAPIPrivate(*this), _parent)
 {
 }
 
 // --------------------------------------------------------------------------
-qMidasAPI::~qMidasAPI()
+qXnatAPI::~qXnatAPI()
 {
 }
 
 // --------------------------------------------------------------------------
-QString qMidasAPI::midasUrl()const
+QString qXnatAPI::midasUrl()const
 {
   return Superclass::serverUrl();
 }
 
 // --------------------------------------------------------------------------
-void qMidasAPI::setMidasUrl(const QString& newMidasUrl)
+void qXnatAPI::setXnatUrl(const QString& newXnatUrl)
 {
-  Superclass::setServerUrl(newMidasUrl);
+  Superclass::setServerUrl(newXnatUrl);
 }

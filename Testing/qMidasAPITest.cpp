@@ -64,6 +64,7 @@ int qMidasAPITest(int argc, char* argv[])
   tmp.cd("api");
 
   QFile fileReply(tmp.filePath("json"));
+  qDebug() << fileReply.fileName();
   if (!fileReply.open(QFile::WriteOnly))
     {
     std::cerr << "Line " << __LINE__ << " - Failed to create temporary file." 

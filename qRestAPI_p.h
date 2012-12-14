@@ -53,6 +53,9 @@ public:
   QList<QVariantMap> parseXnatResult(const QScriptValue& scriptValue);
   QString qVariantMapToString(const QList<QVariantMap>& result)const;
 
+  static QVariantMap scriptValueToMap(const QScriptValue& value);
+  static void appendScriptValueToVariantMapList(QList<QVariantMap>& result, const QScriptValue& data);
+
 public slots:
   void processReply(QNetworkReply* reply);
   void print(const QString& msg);

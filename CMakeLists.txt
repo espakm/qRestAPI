@@ -14,9 +14,9 @@ SET(KIT_SRCS
   qMidasAPI.cpp
   qMidasAPI.h
   qMidasAPI_p.h
-#  qXnatAPI.cpp
-#  qXnatAPI.h
-#  qXnatAPI_p.h
+  qXnatAPI.cpp
+  qXnatAPI.h
+  qXnatAPI_p.h
   )
 
 SET(KIT_MOC_SRCS
@@ -24,8 +24,8 @@ SET(KIT_MOC_SRCS
   qRestAPI_p.h
   qMidasAPI.h
   qMidasAPI_p.h
-#  qXnatAPI.h
-#  qXnatAPI_p.h
+  qXnatAPI.h
+  qXnatAPI_p.h
   )
 
 QT4_WRAP_CPP(KIT_MOC_OUTPUT ${KIT_MOC_SRCS})

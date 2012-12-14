@@ -1,6 +1,6 @@
 /*==============================================================================
 
-  Program: 3D Slicer
+  Program: qRestAPI
 
   Copyright (c) 2010 Kitware Inc.
 
@@ -18,8 +18,8 @@
 
 ==============================================================================*/
 
-#ifndef __qMidasAPI_p_h
-#define __qMidasAPI_p_h
+#ifndef __qXnatAPI_p_h
+#define __qXnatAPI_p_h
 
 // Qt includes
 #include <QHash>
@@ -30,25 +30,25 @@
 #endif
 #include <QScriptEngine>
 
-// qMidasAPI includes
+// qXnatAPI includes
 #include "qRestAPI_p.h"
-#include "qMidasAPI.h"
+#include "qXnatAPI.h"
 
 // --------------------------------------------------------------------------
-class qMidasAPIPrivate : public qRestAPIPrivate
+class qXnatAPIPrivate : public qRestAPIPrivate
 {
-  Q_DECLARE_PUBLIC(qMidasAPI);
+  Q_DECLARE_PUBLIC(qXnatAPI);
   Q_OBJECT
 
   typedef qRestAPIPrivate Superclass;
 
 protected:
-  qMidasAPI* const q_ptr;
+  qXnatAPI* const q_ptr;
 public:
-  typedef qMidasAPIPrivate Self;
-  qMidasAPIPrivate(qMidasAPI& object);
+  typedef qXnatAPIPrivate Self;
+  qXnatAPIPrivate(qXnatAPI& object);
 
-  QUrl createUrl(const QString& method, const qMidasAPI::ParametersType& parameters);
+  QUrl createUrl(const QString& method, const qXnatAPI::ParametersType& parameters);
   QList<QVariantMap> parseResult(const QScriptValue& scriptValue);
 };
 

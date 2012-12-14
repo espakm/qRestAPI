@@ -116,6 +116,8 @@ signals:
   void resultReceived(QUuid queryUuid, const QList<QVariantMap>&);
 
 protected:
+  qRestAPI(qRestAPIPrivate* d, QObject* parent = 0);
+
   QScopedPointer<qRestAPIPrivate> d_ptr;
 
 private:

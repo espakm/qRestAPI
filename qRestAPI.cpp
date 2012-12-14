@@ -33,28 +33,6 @@
 #include "qRestAPI_p.h"
 
 // --------------------------------------------------------------------------
-namespace
-{
-
-// --------------------------------------------------------------------------
-QVariantMap scriptValueToMap(const QScriptValue& value)
-{
-#if QT_VERSION >= 0x040700
-  return value.toVariant().toMap();
-#else
-  QVariantMap result;
-  for (QScriptValueIterator it(value); it.hasNext();)
-    {
-    it.next();
-    result.insert(it.name(), it.value().toVariant());
-    }
-  return result;
-#endif
-}
-
-} // end of anonymous namespace
-
-// --------------------------------------------------------------------------
 void qRestAPIResult::setResult(QUuid queryUuid, const QList<QVariantMap>& result)
 {
   this->QueryUuid = queryUuid;
@@ -161,17 +139,30 @@ QUuid qRestAPIPrivate::postQuery(const QUrl& url, const qRestAPI::RawHeadersType
   return queryUuid;
 }
 
-namespace
-{
 // --------------------------------------------------------------------------
-void appendScriptValueToVariantMapList(QList<QVariantMap>& result, const QScriptValue& data)
+QVariantMap qRestAPIPrivate::scriptValueToMap(const QScriptValue& value)
+{
+#if QT_VERSION >= 0x040700
+  return value.toVariant().toMap();
+#else
+  QVariantMap result;
+  for (QScriptValueIterator it(value); it.hasNext();)
+    {
+    it.next();
+    result.insert(it.name(), it.value().toVariant());
+    }
+  return result;
+#endif
+}
+
+// --------------------------------------------------------------------------
+void qRestAPIPrivate::appendScriptValueToVariantMapList(QList<QVariantMap>& result, const QScriptValue& data)
 {
   QVariantMap map = scriptValueToMap(data);
   if (!map.isEmpty())
     {
     result << scriptValueToMap(data);
     }
-}
 }
 
 // --------------------------------------------------------------------------
@@ -356,6 +347,16 @@ void qRestAPIPrivate::queryTimeOut()
 qRestAPI::qRestAPI(QObject* _parent)
   : Superclass(_parent)
   , d_ptr(new qRestAPIPrivate(*this))
+{
+  Q_D(qRestAPI);
+  d->init();
+  qRegisterMetaType<QUuid>("QUuid");
+  qRegisterMetaType<QList<QVariantMap> >("QList<QVariantMap>");
+}
+
+qRestAPI::qRestAPI(qRestAPIPrivate* ptr, QObject* _parent)
+  : Superclass(_parent)
+  , d_ptr(ptr)
 {
   Q_D(qRestAPI);
   d->init();
