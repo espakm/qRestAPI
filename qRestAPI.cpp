@@ -1,6 +1,6 @@
 /*==============================================================================
 
-  Program: qMidasAPI
+  Program: qRestAPI
 
   Copyright (c) 2010 Kitware Inc.
 
@@ -28,9 +28,9 @@
 #include <QUuid>
 #include <QDebug>
 
-// qMidasAPI includes
-#include "qMidasAPI.h"
-#include "qMidasAPI_p.h"
+// qRestAPI includes
+#include "qRestAPI.h"
+#include "qRestAPI_p.h"
 
 // --------------------------------------------------------------------------
 namespace
@@ -55,29 +55,29 @@ QVariantMap scriptValueToMap(const QScriptValue& value)
 } // end of anonymous namespace
 
 // --------------------------------------------------------------------------
-void qMidasAPIResult::setResult(QUuid queryUuid, const QList<QVariantMap>& result)
+void qRestAPIResult::setResult(QUuid queryUuid, const QList<QVariantMap>& result)
 {
   this->QueryUuid = queryUuid;
   this->Result = result;
 }
 
 // --------------------------------------------------------------------------
-void qMidasAPIResult::setError(const QString& error)
+void qRestAPIResult::setError(const QString& error)
 {
   this->Error += error;
 }
 
 //// --------------------------------------------------------------------------
-//void qMidasAPIResult::setSslError(const QString& sslError)
+//void qRestAPIResult::setSslError(const QString& sslError)
 //{
 //  this->SslError += sslError;
 //}
 
 // --------------------------------------------------------------------------
-// qMidasAPIPrivate methods
+// qRestAPIPrivate methods
 
 // --------------------------------------------------------------------------
-qMidasAPIPrivate::qMidasAPIPrivate(qMidasAPI& object)
+qRestAPIPrivate::qRestAPIPrivate(qRestAPI& object)
   : q_ptr(&object)
 {
   this->ResponseType = "json";
@@ -87,9 +87,9 @@ qMidasAPIPrivate::qMidasAPIPrivate(qMidasAPI& object)
 }
 
 // --------------------------------------------------------------------------
-void qMidasAPIPrivate::init()
+void qRestAPIPrivate::init()
 {
-  Q_Q(qMidasAPI);
+  Q_Q(qRestAPI);
   this->NetworkManager = new QNetworkAccessManager(q);
   QObject::connect(this->NetworkManager, SIGNAL(finished(QNetworkReply*)),
                    this, SLOT(processReply(QNetworkReply*)));
@@ -109,11 +109,10 @@ void qMidasAPIPrivate::init()
 }
 
 // --------------------------------------------------------------------------
-QUrl qMidasAPIPrivate
-::createUrl(const QString& method, const qMidasAPI::ParametersType& parameters)
+QUrl qRestAPIPrivate
+::createUrl(const QString& method, const qRestAPI::ParametersType& parameters)
 {
-//  QUrl url(this->MidasUrl + "/api/" + this->ResponseType);
-  QUrl url(this->MidasUrl);
+  QUrl url(this->ServerUrl);
   url.addQueryItem("format", this->ResponseType);
   if (!method.isEmpty())
     {
@@ -127,9 +126,9 @@ QUrl qMidasAPIPrivate
 }
 
 // --------------------------------------------------------------------------
-QUuid qMidasAPIPrivate::postQuery(const QUrl& url, const qMidasAPI::RawHeadersType& rawHeaders)
+QUuid qRestAPIPrivate::postQuery(const QUrl& url, const qRestAPI::RawHeadersType& rawHeaders)
 {
-  Q_Q(qMidasAPI);
+  Q_Q(qRestAPI);
   QNetworkRequest queryRequest;
   queryRequest.setUrl(url);
   QUuid queryUuid = QUuid::createUuid();
@@ -176,9 +175,9 @@ void appendScriptValueToVariantMapList(QList<QVariantMap>& result, const QScript
 }
 
 // --------------------------------------------------------------------------
-QList<QVariantMap> qMidasAPIPrivate::parseResult(const QScriptValue& scriptValue)
+QList<QVariantMap> qRestAPIPrivate::parseResult(const QScriptValue& scriptValue)
 {
-  Q_Q(qMidasAPI);
+  Q_Q(qRestAPI);
   // e.g. {"stat":"ok","code":"0","message":"","data":[{"p1":"v1","p2":"v2",...}]}
   QList<QVariantMap> result;
   QScriptValue stat = scriptValue.property("stat");
@@ -219,9 +218,9 @@ QList<QVariantMap> qMidasAPIPrivate::parseResult(const QScriptValue& scriptValue
 }
 
 // --------------------------------------------------------------------------
-QList<QVariantMap> qMidasAPIPrivate::parseXnatResult(const QScriptValue& scriptValue)
+QList<QVariantMap> qRestAPIPrivate::parseXnatResult(const QScriptValue& scriptValue)
 {
-  Q_Q(qMidasAPI);
+  Q_Q(qRestAPI);
   // e.g. {"ResultSet":{"Result": [{"p1":"v1","p2":"v2",...}], "totalRecords":"13"}}
   QList<QVariantMap> result;
   QScriptValue resultSet = scriptValue.property("ResultSet");
@@ -263,9 +262,9 @@ QList<QVariantMap> qMidasAPIPrivate::parseXnatResult(const QScriptValue& scriptV
 }
 
 // --------------------------------------------------------------------------
-void qMidasAPIPrivate::processReply(QNetworkReply* reply)
+void qRestAPIPrivate::processReply(QNetworkReply* reply)
 {
-  Q_Q(qMidasAPI);
+  Q_Q(qRestAPI);
   QUuid uuid(reply->property("uuid").toString());
   if (reply->error() != QNetworkReply::NoError)
     {
@@ -286,10 +285,10 @@ void qMidasAPIPrivate::processReply(QNetworkReply* reply)
 }
 
 #ifndef QT_NO_OPENSSL
-void qMidasAPIPrivate::onSslErrors(QNetworkReply* reply, const QList<QSslError>& errors)
+void qRestAPIPrivate::onSslErrors(QNetworkReply* reply, const QList<QSslError>& errors)
 {
-  qDebug() << "qMidasAPIPrivate::onSslErrors(QNetworkReply* reply, const QList<QSslError>& errors)";
-  Q_Q(qMidasAPI);
+  qDebug() << "qRestAPIPrivate::onSslErrors(QNetworkReply* reply, const QList<QSslError>& errors)";
+  Q_Q(qRestAPI);
   QString errorString;
   foreach (const QSslError& error, errors)
   {
@@ -314,15 +313,15 @@ void qMidasAPIPrivate::onSslErrors(QNetworkReply* reply, const QList<QSslError>&
 #endif
 
 // --------------------------------------------------------------------------
-void qMidasAPIPrivate::print(const QString& msg)
+void qRestAPIPrivate::print(const QString& msg)
 {
   qDebug() << msg;
 }
 
 // --------------------------------------------------------------------------
-void qMidasAPIPrivate::queryProgress()
+void qRestAPIPrivate::queryProgress()
 {
-  Q_Q(qMidasAPI);
+  Q_Q(qRestAPI);
   QNetworkReply* reply = qobject_cast<QNetworkReply*>(this->sender());
   Q_ASSERT(reply);
   if (!reply)
@@ -338,9 +337,9 @@ void qMidasAPIPrivate::queryProgress()
 }
 
 // --------------------------------------------------------------------------
-void qMidasAPIPrivate::queryTimeOut()
+void qRestAPIPrivate::queryTimeOut()
 {
-  Q_Q(qMidasAPI);
+  Q_Q(qRestAPI);
   QTimer* timer = qobject_cast<QTimer*>(this->sender());
   Q_ASSERT(timer);
   QNetworkReply* reply = qobject_cast<QNetworkReply*>(timer->parent());
@@ -351,59 +350,111 @@ void qMidasAPIPrivate::queryTimeOut()
 }
 
 // --------------------------------------------------------------------------
-// qMidasAPI methods
+// qRestAPI methods
 
 // --------------------------------------------------------------------------
-qMidasAPI::qMidasAPI(QObject* _parent)
+qRestAPI::qRestAPI(QObject* _parent)
   : Superclass(_parent)
-  , d_ptr(new qMidasAPIPrivate(*this))
+  , d_ptr(new qRestAPIPrivate(*this))
 {
-  Q_D(qMidasAPI);
+  Q_D(qRestAPI);
   d->init();
   qRegisterMetaType<QUuid>("QUuid");
   qRegisterMetaType<QList<QVariantMap> >("QList<QVariantMap>");
 }
 
 // --------------------------------------------------------------------------
-qMidasAPI::~qMidasAPI()
+qRestAPI::~qRestAPI()
 {
 }
 
 // --------------------------------------------------------------------------
-QString qMidasAPI::midasUrl()const
+QString qRestAPI::serverUrl()const
 {
-  return Superclass::serverUrl();
+  Q_D(const qRestAPI);
+  return d->ServerUrl;
 }
 
 // --------------------------------------------------------------------------
-void qMidasAPI::setMidasUrl(const QString& newMidasUrl)
+void qRestAPI::setServerUrl(const QString& newServerUrl)
 {
-  Superclass::setServerUrl(newMidasUrl);
+  Q_D(qRestAPI);
+  d->ServerUrl = newServerUrl;
 }
 
 // --------------------------------------------------------------------------
-QList<QVariantMap> qMidasAPI::synchronousQuery(
+int qRestAPI::timeOut()const
+{
+  Q_D(const qRestAPI);
+  return d->TimeOut;
+}
+
+// --------------------------------------------------------------------------
+void qRestAPI::setTimeOut(int msecs)
+{
+  Q_D(qRestAPI);
+  d->TimeOut = msecs;
+}
+
+// --------------------------------------------------------------------------
+qRestAPI::RawHeadersType qRestAPI::defaultRawHeaders()const
+{
+  Q_D(const qRestAPI);
+  return d->DefaultRawHeaders;
+}
+
+// --------------------------------------------------------------------------
+void qRestAPI::setDefaultRawHeaders(const qRestAPI::RawHeadersType& defaultRawHeaders)
+{
+  Q_D(qRestAPI);
+  d->DefaultRawHeaders = defaultRawHeaders;
+}
+
+// --------------------------------------------------------------------------
+bool qRestAPI::suppressSslErrors()const
+{
+  Q_D(const qRestAPI);
+  return d->SuppressSslErrors;
+}
+
+// --------------------------------------------------------------------------
+void qRestAPI::setSuppressSslErrors(bool suppressSslErrors)
+{
+  Q_D(qRestAPI);
+  d->SuppressSslErrors = suppressSslErrors;
+}
+
+// --------------------------------------------------------------------------
+QUuid qRestAPI::query(const QString& method, const ParametersType& parameters, const qRestAPI::RawHeadersType& rawHeaders)
+{
+  Q_D(qRestAPI);
+  QUrl url = d->createUrl(method, parameters);
+  return d->postQuery(url, rawHeaders);
+}
+
+// --------------------------------------------------------------------------
+QList<QVariantMap> qRestAPI::synchronousQuery(
   bool &ok,
-  const QString& midasUrl,const QString& method,
+  const QString& serverUrl,const QString& method,
   const ParametersType& parameters,
   const RawHeadersType& rawHeaders,
   int maxWaitingTimeInMSecs)
 {
-  qMidasAPI midasAPI;
-  midasAPI.setMidasUrl(midasUrl);
-  midasAPI.setSuppressSslErrors(true);
-  midasAPI.setTimeOut(maxWaitingTimeInMSecs);
-  midasAPI.query(method, parameters, rawHeaders);
-  qMidasAPIResult queryResult;
-  QObject::connect(&midasAPI, SIGNAL(resultReceived(QUuid,QList<QVariantMap>)),
+  qRestAPI restAPI;
+  restAPI.setServerUrl(serverUrl);
+  restAPI.setSuppressSslErrors(true);
+  restAPI.setTimeOut(maxWaitingTimeInMSecs);
+  restAPI.query(method, parameters, rawHeaders);
+  qRestAPIResult queryResult;
+  QObject::connect(&restAPI, SIGNAL(resultReceived(QUuid,QList<QVariantMap>)),
                    &queryResult, SLOT(setResult(QUuid,QList<QVariantMap>)));
-  QObject::connect(&midasAPI, SIGNAL(errorReceived(QString)),
+  QObject::connect(&restAPI, SIGNAL(errorReceived(QString)),
                    &queryResult, SLOT(setError(QString)));
   QEventLoop eventLoop;
-  QObject::connect(&midasAPI, SIGNAL(resultReceived(QUuid,QList<QVariantMap>)),
+  QObject::connect(&restAPI, SIGNAL(resultReceived(QUuid,QList<QVariantMap>)),
                    &eventLoop, SLOT(quit()));
   // Time out will fire an error which will quit the event loop.
-  QObject::connect(&midasAPI, SIGNAL(errorReceived(QString)),
+  QObject::connect(&restAPI, SIGNAL(errorReceived(QString)),
                    &eventLoop, SLOT(quit()));
   eventLoop.exec();
   ok = queryResult.Error.isNull();
@@ -422,4 +473,22 @@ QList<QVariantMap> qMidasAPI::synchronousQuery(
     queryResult.Result.push_front(map);
     }
   return queryResult.Result;
+}
+
+// --------------------------------------------------------------------------
+QString qRestAPI::qVariantMapListToString(const QList<QVariantMap>& list)
+{
+  QStringList values;
+  foreach(const QVariantMap& map, list)
+    {
+    foreach(const QString& key, map.keys())
+      {
+      QString value;
+      value += key;
+      value += ": ";
+      value += map[key].toString();
+      values << value;
+      }
+    }
+  return values.join("\n");
 }

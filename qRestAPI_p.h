@@ -18,8 +18,8 @@
 
 ==============================================================================*/
 
-#ifndef __qMidasAPI_p_h
-#define __qMidasAPI_p_h
+#ifndef __qRestAPI_p_h
+#define __qRestAPI_p_h
 
 // Qt includes
 #include <QHash>
@@ -30,24 +30,24 @@
 #endif
 #include <QScriptEngine>
 
-// qMidasAPI includes
-#include "qMidasAPI.h"
+// qRestAPI includes
+#include "qRestAPI.h"
 
 // --------------------------------------------------------------------------
-class qMidasAPIPrivate : public QObject
+class qRestAPIPrivate : public QObject
 {
-  Q_DECLARE_PUBLIC(qMidasAPI);
+  Q_DECLARE_PUBLIC(qRestAPI);
   Q_OBJECT
 protected:
-  qMidasAPI* const q_ptr;
+  qRestAPI* const q_ptr;
 public:
-  typedef qMidasAPIPrivate Self;
-  qMidasAPIPrivate(qMidasAPI& object);
+  typedef qRestAPIPrivate Self;
+  qRestAPIPrivate(qRestAPI& object);
 
   virtual void init();
 
-  QUrl createUrl(const QString& method, const qMidasAPI::ParametersType& parameters);
-  QUuid postQuery(const QUrl& queryUrl, const qMidasAPI::RawHeadersType& rawHeaders = qMidasAPI::RawHeadersType());
+  QUrl createUrl(const QString& method, const qRestAPI::ParametersType& parameters);
+  QUuid postQuery(const QUrl& queryUrl, const qRestAPI::RawHeadersType& rawHeaders = qRestAPI::RawHeadersType());
 
   QList<QVariantMap> parseResult(const QScriptValue& scriptValue);
   QList<QVariantMap> parseXnatResult(const QScriptValue& scriptValue);
@@ -66,18 +66,18 @@ protected slots:
 #endif
 
 public:
-  QString MidasUrl;
+  QString ServerUrl;
   QString ResponseType;
 
   QNetworkAccessManager* NetworkManager;
   QScriptEngine ScriptEngine;
   int TimeOut;
-  qMidasAPI::RawHeadersType DefaultRawHeaders;
+  qRestAPI::RawHeadersType DefaultRawHeaders;
   bool SuppressSslErrors;
 };
 
 // --------------------------------------------------------------------------
-class qMidasAPIResult : public QObject
+class qRestAPIResult : public QObject
 {
   Q_OBJECT
 public:

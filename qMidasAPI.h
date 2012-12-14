@@ -21,13 +21,7 @@
 #ifndef __qMidasAPI_h
 #define __qMidasAPI_h
 
-// Qt includes
-#include <QMap>
-#include <QObject>
-#include <QUuid>
-
-template <class Key, class T> class QMap;
-typedef QMap<QString, QVariant> QVariantMap;
+#include "qRestAPI.h"
 
 class qMidasAPIPrivate;
 
@@ -44,32 +38,22 @@ class qMidasAPIPrivate;
 /// midas.query("midas.version");
 /// ...
 /// </code>
-class qMidasAPI : public QObject
+class qMidasAPI : public qRestAPI
 {
   Q_OBJECT
   /// Url of the Midas server. e.g. "http://slicer.kitware.com/midas3"
   Q_PROPERTY(QString midasUrl READ midasUrl WRITE setMidasUrl)
 
-  /// Max time to wait until last progress of a query
-  Q_PROPERTY(int timeOut READ timeOut WRITE setTimeOut)
 public:
-  typedef QObject Superclass;
+  typedef qRestAPI Superclass;
   explicit qMidasAPI(QObject*parent = 0);
   virtual ~qMidasAPI();
 
+  typedef QMap<QString, QString> ParametersType;
+  typedef QMap<QByteArray, QByteArray> RawHeadersType;
+
   QString midasUrl()const;
   void setMidasUrl(const QString& newMidasUrl);
-
-  typedef QMap<QString, QString> ParametersType;
-  /// Post a query on the Midas server. The \a method and \parameters
-  /// are used to compose the query.
-  /// errorReceived() is emitted if no server is found or if the server sends
-  /// errors.
-  /// resultReceived() is emitted when a result is received from the server,
-  /// it is fired even if errors are received.
-  /// Returns a unique identifiant of the posted query.
-  QUuid query(const QString& method,
-    const ParametersType& parameters = ParametersType());
 
   /// Utility function that waits \a maxWaitingTimeInMSecs msecs for the result
   /// of the query. Returns the answer of the server or an empty map if the
@@ -80,18 +64,8 @@ public:
   static QList<QVariantMap> synchronousQuery(bool &ok,
     const QString& midasUrl,
     const QString& method, const ParametersType& parameters = ParametersType(),
+    const RawHeadersType& rawHeaders = RawHeadersType(),
     int maxWaitingTimeInMSecs = 2500);
-
-  /// Utility function that transforms a QList of QVariantMap into a string.
-  /// Mostly for debug purpose.
-  static QString qVariantMapListToString(const QList<QVariantMap>& variants);
-
-  void setTimeOut(int msecs);
-  int timeOut()const;
-signals:
-  void infoReceived(const QString& message);
-  void errorReceived(const QString& errorMessage);
-  void resultReceived(QUuid queryUuid, const QList<QVariantMap>&);
 
 protected:
   QScopedPointer<qMidasAPIPrivate> d_ptr;
@@ -102,4 +76,3 @@ private:
 };
 
 #endif
-
