@@ -41,8 +41,6 @@ class qXnatAPIPrivate;
 class qXnatAPI : public qRestAPI
 {
   Q_OBJECT
-  /// Url of the Xnat server. e.g. "http://slicer.kitware.com/midas3"
-  Q_PROPERTY(QString midasUrl READ midasUrl WRITE setXnatUrl)
 
 public:
   typedef qRestAPI Superclass;
@@ -51,9 +49,6 @@ public:
 
   typedef QMap<QString, QString> ParametersType;
   typedef QMap<QByteArray, QByteArray> RawHeadersType;
-
-  QString midasUrl()const;
-  void setXnatUrl(const QString& newXnatUrl);
 
 private:
   Q_DECLARE_PRIVATE(qXnatAPI);

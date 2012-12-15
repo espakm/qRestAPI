@@ -118,15 +118,3 @@ qXnatAPI::qXnatAPI(QObject* _parent)
 qXnatAPI::~qXnatAPI()
 {
 }
-
-// --------------------------------------------------------------------------
-QString qXnatAPI::midasUrl()const
-{
-  return Superclass::serverUrl();
-}
-
-// --------------------------------------------------------------------------
-void qXnatAPI::setXnatUrl(const QString& newXnatUrl)
-{
-  Superclass::setServerUrl(newXnatUrl);
-}
