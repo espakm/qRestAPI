@@ -46,7 +46,7 @@ protected:
   qXnatAPI* const q_ptr;
 public:
   typedef qXnatAPIPrivate Self;
-  qXnatAPIPrivate(qXnatAPI& object);
+  qXnatAPIPrivate(qXnatAPI* object);
 
   QUrl createUrl(const QString& method, const qXnatAPI::ParametersType& parameters);
   QList<QVariantMap> parseResult(const QScriptValue& scriptValue);

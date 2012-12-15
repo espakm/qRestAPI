@@ -55,8 +55,8 @@ void qRestAPIResult::setError(const QString& error)
 // qRestAPIPrivate methods
 
 // --------------------------------------------------------------------------
-qRestAPIPrivate::qRestAPIPrivate(qRestAPI& object)
-  : q_ptr(&object)
+qRestAPIPrivate::qRestAPIPrivate(qRestAPI* object)
+  : q_ptr(object)
 {
   this->ResponseType = "json";
   this->NetworkManager = 0;
@@ -90,12 +90,33 @@ void qRestAPIPrivate::init()
 QUrl qRestAPIPrivate
 ::createUrl(const QString& method, const qRestAPI::ParametersType& parameters)
 {
-  QUrl url(this->ServerUrl);
-  url.addQueryItem("format", this->ResponseType);
+//  return createUrlMidas(method, parameters);
+  return createUrlXnat(method, parameters);
+}
+
+// --------------------------------------------------------------------------
+QUrl qRestAPIPrivate
+::createUrlMidas(const QString& method, const qRestAPI::ParametersType& parameters)
+{
+  QUrl url(this->ServerUrl + "/api/" + this->ResponseType);
   if (!method.isEmpty())
     {
     url.addQueryItem("method", method);
     }
+  foreach(const QString& parameter, parameters.keys())
+    {
+    url.addQueryItem(parameter, parameters[parameter]);
+    }
+  return url;
+}
+
+// --------------------------------------------------------------------------
+QUrl qRestAPIPrivate
+::createUrlXnat(const QString& method, const qRestAPI::ParametersType& parameters)
+{
+  QUrl url(this->ServerUrl);
+  url.addQueryItem("format", this->ResponseType);
+  qDebug() << url;
   foreach(const QString& parameter, parameters.keys())
     {
     url.addQueryItem(parameter, parameters[parameter]);
@@ -168,6 +189,13 @@ void qRestAPIPrivate::appendScriptValueToVariantMapList(QList<QVariantMap>& resu
 // --------------------------------------------------------------------------
 QList<QVariantMap> qRestAPIPrivate::parseResult(const QScriptValue& scriptValue)
 {
+//  return parseResultMidas(scriptValue);
+  return parseResultXnat(scriptValue);
+}
+
+// --------------------------------------------------------------------------
+QList<QVariantMap> qRestAPIPrivate::parseResultMidas(const QScriptValue& scriptValue)
+{
   Q_Q(qRestAPI);
   // e.g. {"stat":"ok","code":"0","message":"","data":[{"p1":"v1","p2":"v2",...}]}
   QList<QVariantMap> result;
@@ -209,7 +237,7 @@ QList<QVariantMap> qRestAPIPrivate::parseResult(const QScriptValue& scriptValue)
 }
 
 // --------------------------------------------------------------------------
-QList<QVariantMap> qRestAPIPrivate::parseXnatResult(const QScriptValue& scriptValue)
+QList<QVariantMap> qRestAPIPrivate::parseResultXnat(const QScriptValue& scriptValue)
 {
   Q_Q(qRestAPI);
   // e.g. {"ResultSet":{"Result": [{"p1":"v1","p2":"v2",...}], "totalRecords":"13"}}
@@ -266,8 +294,8 @@ void qRestAPIPrivate::processReply(QNetworkReply* reply)
   QScriptValue scriptResult =
     this->ScriptEngine.evaluate("(" + QString(reply->readAll()) + ")");
   q->emit infoReceived(QString("Parse results for ") + uuid);
-//  QList<QVariantMap> result = this->parseResult(scriptResult);
-  QList<QVariantMap> result = this->parseXnatResult(scriptResult);
+  QList<QVariantMap> result = this->parseResult(scriptResult);
+//  QList<QVariantMap> result = this->parseXnatResult(scriptResult);
   q->emit infoReceived(QString("Results for ") + uuid.toString()
                        + ": " + q->qVariantMapListToString(result));
   q->emit resultReceived(uuid, result);
@@ -346,7 +374,7 @@ void qRestAPIPrivate::queryTimeOut()
 // --------------------------------------------------------------------------
 qRestAPI::qRestAPI(QObject* _parent)
   : Superclass(_parent)
-  , d_ptr(new qRestAPIPrivate(*this))
+  , d_ptr(new qRestAPIPrivate(this))
 {
   Q_D(qRestAPI);
   d->init();

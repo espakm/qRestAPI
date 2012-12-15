@@ -37,9 +37,9 @@
 // qXnatAPIPrivate methods
 
 // --------------------------------------------------------------------------
-qXnatAPIPrivate::qXnatAPIPrivate(qXnatAPI& object)
+qXnatAPIPrivate::qXnatAPIPrivate(qXnatAPI* object)
   : Superclass(object)
-  , q_ptr(&object)
+  , q_ptr(object)
 {
 }
 
@@ -110,7 +110,7 @@ QList<QVariantMap> qXnatAPIPrivate::parseResult(const QScriptValue& scriptValue)
 
 // --------------------------------------------------------------------------
 qXnatAPI::qXnatAPI(QObject* _parent)
-  : Superclass(new qXnatAPIPrivate(*this), _parent)
+  : Superclass(new qXnatAPIPrivate(this), _parent)
 {
 }
 

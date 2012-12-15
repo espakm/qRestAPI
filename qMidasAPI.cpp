@@ -37,9 +37,9 @@
 // qMidasAPIPrivate methods
 
 // --------------------------------------------------------------------------
-qMidasAPIPrivate::qMidasAPIPrivate(qMidasAPI& object)
+qMidasAPIPrivate::qMidasAPIPrivate(qMidasAPI* object)
   : Superclass(object)
-  , q_ptr(&object)
+  , q_ptr(object)
 {
 }
 
@@ -48,7 +48,6 @@ QUrl qMidasAPIPrivate
 ::createUrl(const QString& method, const qMidasAPI::ParametersType& parameters)
 {
   QUrl url(this->ServerUrl + "/api/" + this->ResponseType);
-  url.addQueryItem("format", this->ResponseType);
   if (!method.isEmpty())
     {
     url.addQueryItem("method", method);
@@ -108,7 +107,7 @@ QList<QVariantMap> qMidasAPIPrivate::parseResult(const QScriptValue& scriptValue
 
 // --------------------------------------------------------------------------
 qMidasAPI::qMidasAPI(QObject* _parent)
-  : Superclass(new qMidasAPIPrivate(*this), _parent)
+  : Superclass(new qMidasAPIPrivate(this), _parent)
 {
 }
 

@@ -46,7 +46,7 @@ protected:
   qMidasAPI* const q_ptr;
 public:
   typedef qMidasAPIPrivate Self;
-  qMidasAPIPrivate(qMidasAPI& object);
+  qMidasAPIPrivate(qMidasAPI* object);
 
   QUrl createUrl(const QString& method, const qMidasAPI::ParametersType& parameters);
   QList<QVariantMap> parseResult(const QScriptValue& scriptValue);
