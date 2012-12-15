@@ -112,8 +112,8 @@ QUrl qRestAPIPrivate::createUrlMidas(const QString& method, const qRestAPI::Para
 QUrl qRestAPIPrivate::createUrlXnat(const QString& method, const qRestAPI::ParametersType& parameters)
 {
   qDebug() << "qRestAPIPrivate::createUrlXnat(const QString& method, const qRestAPI::ParametersType& parameters)";
-//  QUrl url(this->ServerUrl + "/REST" + method);
-  QUrl url(this->ServerUrl + method);
+  QUrl url(this->ServerUrl + "/REST" + method);
+//  QUrl url(this->ServerUrl + method);
   url.addQueryItem("format", this->ResponseType);
   qDebug() << url;
   foreach(const QString& parameter, parameters.keys())
