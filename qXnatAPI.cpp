@@ -39,7 +39,6 @@
 // --------------------------------------------------------------------------
 qXnatAPIPrivate::qXnatAPIPrivate(qXnatAPI* object)
   : Superclass(object)
-  , q_ptr(object)
 {
 }
 
@@ -47,62 +46,13 @@ qXnatAPIPrivate::qXnatAPIPrivate(qXnatAPI* object)
 QUrl qXnatAPIPrivate
 ::createUrl(const QString& method, const qXnatAPI::ParametersType& parameters)
 {
-//  QUrl url(this->XnatUrl + "/api/" + this->ResponseType);
-  QUrl url(this->ServerUrl);
-  url.addQueryItem("format", this->ResponseType);
-  if (!method.isEmpty())
-    {
-    url.addQueryItem("method", method);
-    }
-  foreach(const QString& parameter, parameters.keys())
-    {
-    url.addQueryItem(parameter, parameters[parameter]);
-    }
-  return url;
+  return createUrlXnat(method, parameters);
 }
 
 // --------------------------------------------------------------------------
 QList<QVariantMap> qXnatAPIPrivate::parseResult(const QScriptValue& scriptValue)
 {
-  Q_Q(qXnatAPI);
-  // e.g. {"ResultSet":{"Result": [{"p1":"v1","p2":"v2",...}], "totalRecords":"13"}}
-  QList<QVariantMap> result;
-  QScriptValue resultSet = scriptValue.property("ResultSet");
-//  if (stat.toString() != "ok")
-//    {
-//    QString error = QString("Error while parsing outputs:") +
-//      " status: " + scriptValue.property("stat").toString() +
-//      " code: " + scriptValue.property("code").toInteger() +
-//      " msg: " + scriptValue.property("message").toString();
-//    q->emit errorReceived(error);
-//    }
-  QScriptValue dataLength = resultSet.property("totalRecords");
-  QScriptValue data = resultSet.property("Result");
-  if (!data.isObject())
-    {
-    if (data.toString().isEmpty())
-      {
-      q->emit errorReceived("No data");
-      }
-    else
-      {
-      q->emit errorReceived( QString("Bad data: ") + data.toString());
-      }
-    }
-  if (data.isArray())
-    {
-    quint32 length = data.property("length").toUInt32();
-    for(quint32 i = 0; i < length; ++i)
-      {
-      appendScriptValueToVariantMapList(result, data.property(i));
-      }
-    }
-  else
-    {
-    appendScriptValueToVariantMapList(result, data);
-    }
-
-  return result;
+  return parseResultXnat(scriptValue);
 }
 
 // --------------------------------------------------------------------------

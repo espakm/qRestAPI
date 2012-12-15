@@ -41,15 +41,11 @@ class qXnatAPIPrivate : public qRestAPIPrivate
   Q_OBJECT
 
   typedef qRestAPIPrivate Superclass;
-
-protected:
-  qXnatAPI* const q_ptr;
 public:
-  typedef qXnatAPIPrivate Self;
   qXnatAPIPrivate(qXnatAPI* object);
 
-  QUrl createUrl(const QString& method, const qXnatAPI::ParametersType& parameters);
-  QList<QVariantMap> parseResult(const QScriptValue& scriptValue);
+  virtual QUrl createUrl(const QString& method, const qXnatAPI::ParametersType& parameters);
+  virtual QList<QVariantMap> parseResult(const QScriptValue& scriptValue);
 };
 
 #endif

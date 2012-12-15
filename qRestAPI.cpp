@@ -90,8 +90,8 @@ void qRestAPIPrivate::init()
 QUrl qRestAPIPrivate
 ::createUrl(const QString& method, const qRestAPI::ParametersType& parameters)
 {
-//  return createUrlMidas(method, parameters);
-  return createUrlXnat(method, parameters);
+  return createUrlMidas(method, parameters);
+//  return createUrlXnat(method, parameters);
 }
 
 // --------------------------------------------------------------------------
@@ -189,8 +189,8 @@ void qRestAPIPrivate::appendScriptValueToVariantMapList(QList<QVariantMap>& resu
 // --------------------------------------------------------------------------
 QList<QVariantMap> qRestAPIPrivate::parseResult(const QScriptValue& scriptValue)
 {
-//  return parseResultMidas(scriptValue);
-  return parseResultXnat(scriptValue);
+  return parseResultMidas(scriptValue);
+//  return parseResultXnat(scriptValue);
 }
 
 // --------------------------------------------------------------------------

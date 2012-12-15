@@ -36,26 +36,28 @@
 // --------------------------------------------------------------------------
 class qRestAPIPrivate : public QObject
 {
-  Q_DECLARE_PUBLIC(qRestAPI);
   Q_OBJECT
+
+  Q_DECLARE_PUBLIC(qRestAPI);
+
 protected:
   qRestAPI* const q_ptr;
+
 public:
-  typedef qRestAPIPrivate Self;
   qRestAPIPrivate(qRestAPI* object);
 
   virtual void init();
 
   virtual QUrl createUrl(const QString& method, const qRestAPI::ParametersType& parameters);
-  virtual QUrl createUrlMidas(const QString& method, const qRestAPI::ParametersType& parameters);
-  virtual QUrl createUrlXnat(const QString& method, const qRestAPI::ParametersType& parameters);
+  QUrl createUrlMidas(const QString& method, const qRestAPI::ParametersType& parameters);
+  QUrl createUrlXnat(const QString& method, const qRestAPI::ParametersType& parameters);
   QUuid postQuery(const QUrl& queryUrl, const qRestAPI::RawHeadersType& rawHeaders = qRestAPI::RawHeadersType());
 
   virtual QList<QVariantMap> parseResult(const QScriptValue& scriptValue);
-  virtual QList<QVariantMap> parseResultMidas(const QScriptValue& scriptValue);
-  virtual QList<QVariantMap> parseResultXnat(const QScriptValue& scriptValue);
-  QString qVariantMapToString(const QList<QVariantMap>& result)const;
+  QList<QVariantMap> parseResultMidas(const QScriptValue& scriptValue);
+  QList<QVariantMap> parseResultXnat(const QScriptValue& scriptValue);
 
+  static QString qVariantMapToString(const QList<QVariantMap>& result);
   static QVariantMap scriptValueToMap(const QScriptValue& value);
   static void appendScriptValueToVariantMapList(QList<QVariantMap>& result, const QScriptValue& data);
 
