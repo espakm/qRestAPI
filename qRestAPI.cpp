@@ -87,16 +87,14 @@ void qRestAPIPrivate::init()
 }
 
 // --------------------------------------------------------------------------
-QUrl qRestAPIPrivate
-::createUrl(const QString& method, const qRestAPI::ParametersType& parameters)
+QUrl qRestAPIPrivate::createUrl(const QString& method, const qRestAPI::ParametersType& parameters)
 {
-  return createUrlMidas(method, parameters);
-//  return createUrlXnat(method, parameters);
+//  return createUrlMidas(method, parameters);
+  return createUrlXnat(method, parameters);
 }
 
 // --------------------------------------------------------------------------
-QUrl qRestAPIPrivate
-::createUrlMidas(const QString& method, const qRestAPI::ParametersType& parameters)
+QUrl qRestAPIPrivate::createUrlMidas(const QString& method, const qRestAPI::ParametersType& parameters)
 {
   QUrl url(this->ServerUrl + "/api/" + this->ResponseType);
   if (!method.isEmpty())
@@ -111,10 +109,11 @@ QUrl qRestAPIPrivate
 }
 
 // --------------------------------------------------------------------------
-QUrl qRestAPIPrivate
-::createUrlXnat(const QString& method, const qRestAPI::ParametersType& parameters)
+QUrl qRestAPIPrivate::createUrlXnat(const QString& method, const qRestAPI::ParametersType& parameters)
 {
-  QUrl url(this->ServerUrl);
+  qDebug() << "qRestAPIPrivate::createUrlXnat(const QString& method, const qRestAPI::ParametersType& parameters)";
+//  QUrl url(this->ServerUrl + "/REST" + method);
+  QUrl url(this->ServerUrl + method);
   url.addQueryItem("format", this->ResponseType);
   qDebug() << url;
   foreach(const QString& parameter, parameters.keys())
@@ -189,8 +188,8 @@ void qRestAPIPrivate::appendScriptValueToVariantMapList(QList<QVariantMap>& resu
 // --------------------------------------------------------------------------
 QList<QVariantMap> qRestAPIPrivate::parseResult(const QScriptValue& scriptValue)
 {
-  return parseResultMidas(scriptValue);
-//  return parseResultXnat(scriptValue);
+//  return parseResultMidas(scriptValue);
+  return parseResultXnat(scriptValue);
 }
 
 // --------------------------------------------------------------------------
@@ -484,6 +483,48 @@ QList<QVariantMap> qRestAPI::synchronousQuery(
                    &eventLoop, SLOT(quit()));
   // Time out will fire an error which will quit the event loop.
   QObject::connect(&restAPI, SIGNAL(errorReceived(QString)),
+                   &eventLoop, SLOT(quit()));
+  eventLoop.exec();
+  ok = queryResult.Error.isNull();
+  if (!ok)
+    {
+    QVariantMap map;
+    map["queryError"] = queryResult.Error;
+    queryResult.Result.push_front(map);
+    }
+  if (queryResult.Result.count() == 0)
+    {
+    // \tbd
+    Q_ASSERT(queryResult.Result.count());
+    QVariantMap map;
+    map["queryError"] = tr("Unknown error");
+    queryResult.Result.push_front(map);
+    }
+  return queryResult.Result;
+}
+
+// --------------------------------------------------------------------------
+QList<QVariantMap> qRestAPI::synchronousQuery(
+  bool &ok,
+  const QString& method,
+  const ParametersType& parameters,
+  const RawHeadersType& rawHeaders,
+  int maxWaitingTimeInMSecs)
+{
+  this->setSuppressSslErrors(true);
+  this->setTimeOut(maxWaitingTimeInMSecs);
+  qDebug() << " qRestAPI::synchronousQuery() method: " << method;
+  this->query(method, parameters, rawHeaders);
+  qRestAPIResult queryResult;
+  QObject::connect(this, SIGNAL(resultReceived(QUuid,QList<QVariantMap>)),
+                   &queryResult, SLOT(setResult(QUuid,QList<QVariantMap>)));
+  QObject::connect(this, SIGNAL(errorReceived(QString)),
+                   &queryResult, SLOT(setError(QString)));
+  QEventLoop eventLoop;
+  QObject::connect(this, SIGNAL(resultReceived(QUuid,QList<QVariantMap>)),
+                   &eventLoop, SLOT(quit()));
+  // Time out will fire an error which will quit the event loop.
+  QObject::connect(this, SIGNAL(errorReceived(QString)),
                    &eventLoop, SLOT(quit()));
   eventLoop.exec();
   ok = queryResult.Error.isNull();

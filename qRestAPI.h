@@ -104,6 +104,11 @@ public:
     const RawHeadersType& rawHeaders = RawHeadersType(),
     int maxWaitingTimeInMSecs = 2500);
 
+  QList<QVariantMap> synchronousQuery(bool &ok,
+    const QString& method, const ParametersType& parameters = ParametersType(),
+    const RawHeadersType& rawHeaders = RawHeadersType(),
+    int maxWaitingTimeInMSecs = 2500);
+
   /// Utility function that transforms a QList of QVariantMap into a string.
   /// Mostly for debug purpose.
   static QString qVariantMapListToString(const QList<QVariantMap>& variants);
