@@ -50,7 +50,6 @@ public:
 
   virtual QUrl createUrl(const QString& method, const qRestAPI::ParametersType& parameters);
   QUrl createUrlMidas(const QString& method, const qRestAPI::ParametersType& parameters);
-  QUrl createUrlXnat(const QString& method, const qRestAPI::ParametersType& parameters);
   QUuid postQuery(const QUrl& queryUrl, const qRestAPI::RawHeadersType& rawHeaders = qRestAPI::RawHeadersType());
 
   virtual QList<QVariantMap> parseResult(const QScriptValue& scriptValue);

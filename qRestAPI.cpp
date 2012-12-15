@@ -89,8 +89,9 @@ void qRestAPIPrivate::init()
 // --------------------------------------------------------------------------
 QUrl qRestAPIPrivate::createUrl(const QString& method, const qRestAPI::ParametersType& parameters)
 {
-//  return createUrlMidas(method, parameters);
-  return createUrlXnat(method, parameters);
+  qDebug() << "qRestAPIPrivate::createUrl(const QString& method, const qRestAPI::ParametersType& parameters)";
+  return createUrlMidas(method, parameters);
+//  return createUrlXnat(method, parameters);
 }
 
 // --------------------------------------------------------------------------
@@ -101,21 +102,6 @@ QUrl qRestAPIPrivate::createUrlMidas(const QString& method, const qRestAPI::Para
     {
     url.addQueryItem("method", method);
     }
-  foreach(const QString& parameter, parameters.keys())
-    {
-    url.addQueryItem(parameter, parameters[parameter]);
-    }
-  return url;
-}
-
-// --------------------------------------------------------------------------
-QUrl qRestAPIPrivate::createUrlXnat(const QString& method, const qRestAPI::ParametersType& parameters)
-{
-  qDebug() << "qRestAPIPrivate::createUrlXnat(const QString& method, const qRestAPI::ParametersType& parameters)";
-  QUrl url(this->ServerUrl + "/REST" + method);
-//  QUrl url(this->ServerUrl + method);
-  url.addQueryItem("format", this->ResponseType);
-  qDebug() << url;
   foreach(const QString& parameter, parameters.keys())
     {
     url.addQueryItem(parameter, parameters[parameter]);

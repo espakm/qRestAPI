@@ -44,9 +44,18 @@ qXnatAPIPrivate::qXnatAPIPrivate(qXnatAPI* object)
 
 // --------------------------------------------------------------------------
 QUrl qXnatAPIPrivate
-::createUrl(const QString& method, const qXnatAPI::ParametersType& parameters)
+::createUrl(const QString& method, const qRestAPI::ParametersType& parameters)
 {
-  return createUrlXnat(method, parameters);
+  qDebug() << "qXnatAPIPrivate::createUrl(const QString& method, const qRestAPI::ParametersType& parameters)";
+  QUrl url(this->ServerUrl + "/REST" + method);
+//  QUrl url(this->ServerUrl + method);
+  url.addQueryItem("format", this->ResponseType);
+  qDebug() << url;
+  foreach(const QString& parameter, parameters.keys())
+    {
+    url.addQueryItem(parameter, parameters[parameter]);
+    }
+  return url;
 }
 
 // --------------------------------------------------------------------------

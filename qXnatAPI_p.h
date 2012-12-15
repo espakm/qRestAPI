@@ -44,7 +44,7 @@ class qXnatAPIPrivate : public qRestAPIPrivate
 public:
   qXnatAPIPrivate(qXnatAPI* object);
 
-  virtual QUrl createUrl(const QString& method, const qXnatAPI::ParametersType& parameters);
+  virtual QUrl createUrl(const QString& method, const qRestAPI::ParametersType& parameters);
   virtual QList<QVariantMap> parseResult(const QScriptValue& scriptValue);
 };
 
