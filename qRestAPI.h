@@ -67,9 +67,6 @@ public:
   virtual ~qRestAPI();
 
   typedef QMap<QString, QString> ParametersType;
-//  typedef QNetworkCacheMetaData::RawHeaderList RawHeadersType;
-//  typedef QPair<QByteArray, QByteArray> RawHeaderType;
-//  typedef QList<RawHeaderType> RawHeadersType;
   typedef QMap<QByteArray, QByteArray> RawHeadersType;
 
   QString serverUrl()const;

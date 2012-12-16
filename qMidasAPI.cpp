@@ -43,7 +43,7 @@ qMidasAPIPrivate::qMidasAPIPrivate(qMidasAPI* object)
 }
 
 // --------------------------------------------------------------------------
-QUrl qMidasAPIPrivate::createUrl(const QString& method, const qMidasAPI::ParametersType& parameters)
+QUrl qMidasAPIPrivate::createUrl(const QString& method, const qRestAPI::ParametersType& parameters)
 {
   qDebug() << "qMidasAPIPrivate::createUrl(const QString& method, const qMidasAPI::ParametersType& parameters)";
   return createUrlMidas(method, parameters);
@@ -54,6 +54,49 @@ QList<QVariantMap> qMidasAPIPrivate::parseResult(const QScriptValue& scriptValue
 {
   qDebug() << "qMidasAPIPrivate::parseResult(const QScriptValue& scriptValue)";
   return parseResultMidas(scriptValue);
+}
+
+// --------------------------------------------------------------------------
+QList<QVariantMap> qMidasAPIPrivate::parseResultMidas(const QScriptValue& scriptValue)
+{
+  Q_Q(qMidasAPI);
+  // e.g. {"stat":"ok","code":"0","message":"","data":[{"p1":"v1","p2":"v2",...}]}
+  QList<QVariantMap> result;
+  QScriptValue stat = scriptValue.property("stat");
+  if (stat.toString() != "ok")
+    {
+    QString error = QString("Error while parsing outputs:") +
+      " status: " + scriptValue.property("stat").toString() +
+      " code: " + scriptValue.property("code").toInteger() +
+      " msg: " + scriptValue.property("message").toString();
+    q->emit errorReceived(error);
+    }
+  QScriptValue data = scriptValue.property("data");
+  if (!data.isObject())
+    {
+    if (data.toString().isEmpty())
+      {
+      q->emit errorReceived("No data");
+      }
+    else
+      {
+      q->emit errorReceived( QString("Bad data: ") + data.toString());
+      }
+    }
+  if (data.isArray())
+    {
+    quint32 length = data.property("length").toUInt32();
+    for(quint32 i = 0; i < length; ++i)
+      {
+      appendScriptValueToVariantMapList(result, data.property(i));
+      }
+    }
+  else
+    {
+    appendScriptValueToVariantMapList(result, data);
+    }
+
+  return result;
 }
 
 // --------------------------------------------------------------------------

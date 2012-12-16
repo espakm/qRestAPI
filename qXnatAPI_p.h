@@ -46,6 +46,7 @@ public:
 
   virtual QUrl createUrl(const QString& method, const qRestAPI::ParametersType& parameters);
   virtual QList<QVariantMap> parseResult(const QScriptValue& scriptValue);
+  virtual QList<QVariantMap> parseResultXnat(const QScriptValue& scriptValue);
 };
 
 #endif

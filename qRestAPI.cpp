@@ -91,7 +91,6 @@ QUrl qRestAPIPrivate::createUrl(const QString& method, const qRestAPI::Parameter
 {
   qDebug() << "qRestAPIPrivate::createUrl(const QString& method, const qRestAPI::ParametersType& parameters)";
   return createUrlMidas(method, parameters);
-//  return createUrlXnat(method, parameters);
 }
 
 // --------------------------------------------------------------------------
@@ -174,8 +173,10 @@ void qRestAPIPrivate::appendScriptValueToVariantMapList(QList<QVariantMap>& resu
 // --------------------------------------------------------------------------
 QList<QVariantMap> qRestAPIPrivate::parseResult(const QScriptValue& scriptValue)
 {
-//  return parseResultMidas(scriptValue);
-  return parseResultXnat(scriptValue);
+  qDebug() << "qRestAPIPrivate::parseResult(const QScriptValue& scriptValue)";
+  return parseResultMidas(scriptValue);
+//  QList<QVariantMap> result;
+//  return result;
 }
 
 // --------------------------------------------------------------------------
@@ -188,56 +189,12 @@ QList<QVariantMap> qRestAPIPrivate::parseResultMidas(const QScriptValue& scriptV
   if (stat.toString() != "ok")
     {
     QString error = QString("Error while parsing outputs:") +
-      " status: " + scriptValue.property("stat").toString() + 
-      " code: " + scriptValue.property("code").toInteger() + 
+      " status: " + scriptValue.property("stat").toString() +
+      " code: " + scriptValue.property("code").toInteger() +
       " msg: " + scriptValue.property("message").toString();
     q->emit errorReceived(error);
     }
   QScriptValue data = scriptValue.property("data");
-  if (!data.isObject())
-    {
-    if (data.toString().isEmpty())
-      {
-      q->emit errorReceived("No data");
-      }
-    else
-      {
-      q->emit errorReceived( QString("Bad data: ") + data.toString());
-      }
-    }
-  if (data.isArray())
-    {
-    quint32 length = data.property("length").toUInt32();
-    for(quint32 i = 0; i < length; ++i)
-      {
-      appendScriptValueToVariantMapList(result, data.property(i));
-      }
-    }
-  else
-    {
-    appendScriptValueToVariantMapList(result, data);
-    }
-  
-  return result;
-}
-
-// --------------------------------------------------------------------------
-QList<QVariantMap> qRestAPIPrivate::parseResultXnat(const QScriptValue& scriptValue)
-{
-  Q_Q(qRestAPI);
-  // e.g. {"ResultSet":{"Result": [{"p1":"v1","p2":"v2",...}], "totalRecords":"13"}}
-  QList<QVariantMap> result;
-  QScriptValue resultSet = scriptValue.property("ResultSet");
-//  if (stat.toString() != "ok")
-//    {
-//    QString error = QString("Error while parsing outputs:") +
-//      " status: " + scriptValue.property("stat").toString() +
-//      " code: " + scriptValue.property("code").toInteger() +
-//      " msg: " + scriptValue.property("message").toString();
-//    q->emit errorReceived(error);
-//    }
-  QScriptValue dataLength = resultSet.property("totalRecords");
-  QScriptValue data = resultSet.property("Result");
   if (!data.isObject())
     {
     if (data.toString().isEmpty())

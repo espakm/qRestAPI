@@ -45,8 +45,9 @@ class qMidasAPIPrivate : public qRestAPIPrivate
 public:
   qMidasAPIPrivate(qMidasAPI* object);
 
-  QUrl createUrl(const QString& method, const qMidasAPI::ParametersType& parameters);
-  QList<QVariantMap> parseResult(const QScriptValue& scriptValue);
+  virtual QUrl createUrl(const QString& method, const qRestAPI::ParametersType& parameters);
+  virtual QList<QVariantMap> parseResult(const QScriptValue& scriptValue);
+  virtual QList<QVariantMap> parseResultMidas(const QScriptValue& scriptValue);
 };
 
 #endif
