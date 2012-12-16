@@ -51,8 +51,8 @@ public:
   explicit qMidasAPI(QObject*parent = 0);
   virtual ~qMidasAPI();
 
-  typedef QMap<QString, QString> ParametersType;
-  typedef QMap<QByteArray, QByteArray> RawHeadersType;
+  typedef Parameters ParametersType;
+  typedef RawHeaders RawHeadersType;
 
   QString midasUrl()const;
   void setMidasUrl(const QString& newMidasUrl);

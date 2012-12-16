@@ -55,7 +55,7 @@ class qRestAPI : public QObject
 
   /// Default raw headers to be set for each requests. Can be used to set
   /// e.g. the user-agent or authentication information.
-  Q_PROPERTY(RawHeadersType defaultRawHeaders READ defaultRawHeaders WRITE setDefaultRawHeaders)
+  Q_PROPERTY(RawHeaders defaultRawHeaders READ defaultRawHeaders WRITE setDefaultRawHeaders)
 
   /// Suppress SSL errors
   Q_PROPERTY(bool suppressSslErrors READ suppressSslErrors WRITE setSuppressSslErrors)
@@ -65,14 +65,14 @@ public:
   explicit qRestAPI(QObject*parent = 0);
   virtual ~qRestAPI();
 
-  typedef QMap<QString, QString> ParametersType;
-  typedef QMap<QByteArray, QByteArray> RawHeadersType;
+  typedef QMap<QString, QString> Parameters;
+  typedef QMap<QByteArray, QByteArray> RawHeaders;
 
   QString serverUrl()const;
   void setServerUrl(const QString& newServerUrl);
 
-  RawHeadersType defaultRawHeaders()const;
-  void setDefaultRawHeaders(const RawHeadersType& defaultRawHeaders);
+  RawHeaders defaultRawHeaders()const;
+  void setDefaultRawHeaders(const RawHeaders& defaultRawHeaders);
 
   bool suppressSslErrors()const;
   void setSuppressSslErrors(bool suppressSslErrors);
@@ -85,12 +85,12 @@ public:
   /// it is fired even if errors are received.
   /// Returns a unique identifiant of the posted query.
   QUuid query(const QString& resource,
-    const ParametersType& parameters = ParametersType(),
-    const RawHeadersType& rawHeaders = RawHeadersType());
+    const Parameters& parameters = Parameters(),
+    const RawHeaders& rawHeaders = RawHeaders());
 
   QList<QVariantMap> synchronousQuery(bool &ok,
-    const QString& resource, const ParametersType& parameters = ParametersType(),
-    const RawHeadersType& rawHeaders = RawHeadersType());
+    const QString& resource, const Parameters& parameters = Parameters(),
+    const RawHeaders& rawHeaders = RawHeaders());
 
   /// Utility function that transforms a QList of QVariantMap into a string.
   /// Mostly for debug purpose.

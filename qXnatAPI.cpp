@@ -22,7 +22,6 @@
 #include "qXnatAPI.h"
 #include "qXnatAPI_p.h"
 
-
 // --------------------------------------------------------------------------
 // qXnatAPIPrivate methods
 
@@ -34,7 +33,7 @@ qXnatAPIPrivate::qXnatAPIPrivate(qXnatAPI* object)
 
 // --------------------------------------------------------------------------
 QUrl qXnatAPIPrivate
-::createUrl(const QString& resource, const qRestAPI::ParametersType& parameters)
+::createUrl(const QString& resource, const qRestAPI::Parameters& parameters)
 {
   QUrl url = Superclass::createUrl(resource, parameters);
   url.addQueryItem("format", this->ResponseType);

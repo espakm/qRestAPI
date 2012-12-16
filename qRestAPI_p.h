@@ -43,14 +43,27 @@ class qRestAPIPrivate : public QObject
 protected:
   qRestAPI* const q_ptr;
 
+private:
+  static struct StaticInit
+  {
+    StaticInit()
+    {
+      qRestAPIPrivate::staticInit();
+    }
+  } _staticInit;
+
+  static void staticInit();
+
 public:
   qRestAPIPrivate(qRestAPI* object);
 
+protected:
   virtual void init();
 
-  virtual QUrl createUrl(const QString& method, const qRestAPI::ParametersType& parameters);
-//  virtual QUrl createUrlMidas(const QString& method, const qRestAPI::ParametersType& parameters);
-  QUuid postQuery(const QUrl& queryUrl, const qRestAPI::RawHeadersType& rawHeaders = qRestAPI::RawHeadersType());
+public:
+  virtual QUrl createUrl(const QString& method, const qRestAPI::Parameters& parameters);
+//  virtual QUrl createUrlMidas(const QString& method, const qRestAPI::Parameters& parameters);
+  QUuid postQuery(const QUrl& queryUrl, const qRestAPI::RawHeaders& rawHeaders = qRestAPI::RawHeaders());
 
   virtual QList<QVariantMap> parseResult(const QScriptValue& scriptValue);
 
@@ -77,7 +90,7 @@ public:
   QNetworkAccessManager* NetworkManager;
   QScriptEngine ScriptEngine;
   int TimeOut;
-  qRestAPI::RawHeadersType DefaultRawHeaders;
+  qRestAPI::RawHeaders DefaultRawHeaders;
   bool SuppressSslErrors;
 };
 

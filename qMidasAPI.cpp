@@ -36,7 +36,7 @@ qMidasAPIPrivate::qMidasAPIPrivate(qMidasAPI* object)
 }
 
 // --------------------------------------------------------------------------
-QUrl qMidasAPIPrivate::createUrl(const QString& method, const qRestAPI::ParametersType& parameters)
+QUrl qMidasAPIPrivate::createUrl(const QString& method, const qRestAPI::Parameters& parameters)
 {
   QUrl url = Superclass::createUrl("/api/" + this->ResponseType, parameters);
   if (!method.isEmpty())

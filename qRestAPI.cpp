@@ -53,6 +53,8 @@ void qRestAPIResult::setError(const QString& error)
 // --------------------------------------------------------------------------
 // qRestAPIPrivate methods
 
+qRestAPIPrivate::StaticInit qRestAPIPrivate::_staticInit;
+
 // --------------------------------------------------------------------------
 qRestAPIPrivate::qRestAPIPrivate(qRestAPI* object)
   : q_ptr(object)
@@ -61,6 +63,13 @@ qRestAPIPrivate::qRestAPIPrivate(qRestAPI* object)
   this->NetworkManager = 0;
   this->TimeOut = 0;
   this->SuppressSslErrors = true;
+}
+
+// --------------------------------------------------------------------------
+void qRestAPIPrivate::staticInit()
+{
+  qRegisterMetaType<QUuid>("QUuid");
+  qRegisterMetaType<QList<QVariantMap> >("QList<QVariantMap>");
 }
 
 // --------------------------------------------------------------------------
@@ -86,7 +95,7 @@ void qRestAPIPrivate::init()
 }
 
 // --------------------------------------------------------------------------
-QUrl qRestAPIPrivate::createUrl(const QString& resource, const qRestAPI::ParametersType& parameters)
+QUrl qRestAPIPrivate::createUrl(const QString& resource, const qRestAPI::Parameters& parameters)
 {
   QUrl url(this->ServerUrl + resource);
   foreach(const QString& parameter, parameters.keys())
@@ -97,7 +106,7 @@ QUrl qRestAPIPrivate::createUrl(const QString& resource, const qRestAPI::Paramet
 }
 
 // --------------------------------------------------------------------------
-QUuid qRestAPIPrivate::postQuery(const QUrl& url, const qRestAPI::RawHeadersType& rawHeaders)
+QUuid qRestAPIPrivate::postQuery(const QUrl& url, const qRestAPI::RawHeaders& rawHeaders)
 {
   Q_Q(qRestAPI);
   QNetworkRequest queryRequest;
@@ -271,8 +280,8 @@ qRestAPI::qRestAPI(qRestAPIPrivate* ptr, QObject* _parent)
 {
   Q_D(qRestAPI);
   d->init();
-  qRegisterMetaType<QUuid>("QUuid");
-  qRegisterMetaType<QList<QVariantMap> >("QList<QVariantMap>");
+//  qRegisterMetaType<QUuid>("QUuid");
+//  qRegisterMetaType<QList<QVariantMap> >("QList<QVariantMap>");
 }
 
 // --------------------------------------------------------------------------
@@ -309,14 +318,14 @@ void qRestAPI::setTimeOut(int msecs)
 }
 
 // --------------------------------------------------------------------------
-qRestAPI::RawHeadersType qRestAPI::defaultRawHeaders()const
+qRestAPI::RawHeaders qRestAPI::defaultRawHeaders()const
 {
   Q_D(const qRestAPI);
   return d->DefaultRawHeaders;
 }
 
 // --------------------------------------------------------------------------
-void qRestAPI::setDefaultRawHeaders(const qRestAPI::RawHeadersType& defaultRawHeaders)
+void qRestAPI::setDefaultRawHeaders(const qRestAPI::RawHeaders& defaultRawHeaders)
 {
   Q_D(qRestAPI);
   d->DefaultRawHeaders = defaultRawHeaders;
@@ -337,7 +346,7 @@ void qRestAPI::setSuppressSslErrors(bool suppressSslErrors)
 }
 
 // --------------------------------------------------------------------------
-QUuid qRestAPI::query(const QString& resource, const ParametersType& parameters, const qRestAPI::RawHeadersType& rawHeaders)
+QUuid qRestAPI::query(const QString& resource, const Parameters& parameters, const qRestAPI::RawHeaders& rawHeaders)
 {
   Q_D(qRestAPI);
   QUrl url = d->createUrl(resource, parameters);
@@ -348,8 +357,8 @@ QUuid qRestAPI::query(const QString& resource, const ParametersType& parameters,
 QList<QVariantMap> qRestAPI::synchronousQuery(
   bool &ok,
   const QString& resource,
-  const ParametersType& parameters,
-  const RawHeadersType& rawHeaders)
+  const Parameters& parameters,
+  const RawHeaders& rawHeaders)
 {
   this->query(resource, parameters, rawHeaders);
   qRestAPIResult queryResult;
