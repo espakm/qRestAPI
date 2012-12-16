@@ -66,8 +66,8 @@ public:
   /// @deprecated Use the non-static version from qRestAPI.
   static QList<QVariantMap> synchronousQuery(bool &ok,
     const QString& midasUrl,
-    const QString& method, const ParametersType& parameters = ParametersType(),
-    const RawHeadersType& rawHeaders = RawHeadersType(),
+    const QString& method,
+    const ParametersType& parameters = ParametersType(),
     int maxWaitingTimeInMSecs = 2500);
 
 private:

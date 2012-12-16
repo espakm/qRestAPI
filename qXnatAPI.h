@@ -25,25 +25,15 @@
 
 class qXnatAPIPrivate;
 
-/// qXnatAPI is a simple interface class to communicate with a Xnat3 public
-/// API.
-/// Queries are posted to the server and answers reported back.
-/// qXnatAPI works in synchronous or unsynchronous way.
-/// Usage:
-/// <code>
-/// qXnatAPI midas;
-/// midas.setXnatUrl("http://slicer.kitware.com/midas3");
-/// connect(&midas, SIGNAL(resultReceived(QUuid,QList<QVariantMap>)),
-///         myApp, SLOT(processResult(QUuid,QList<QVariantMap>)));
-/// midas.query("midas.version");
-/// ...
-/// </code>
+/// qXnatAPI is a simple interface class to communicate with an XNAT
+/// server through its REST API.
 class qXnatAPI : public qRestAPI
 {
   Q_OBJECT
 
-public:
   typedef qRestAPI Superclass;
+
+public:
   explicit qXnatAPI(QObject*parent = 0);
   virtual ~qXnatAPI();
 

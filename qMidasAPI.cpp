@@ -38,14 +38,10 @@ qMidasAPIPrivate::qMidasAPIPrivate(qMidasAPI* object)
 // --------------------------------------------------------------------------
 QUrl qMidasAPIPrivate::createUrl(const QString& method, const qRestAPI::ParametersType& parameters)
 {
-  QUrl url(this->ServerUrl + "/api/" + this->ResponseType);
+  QUrl url = Superclass::createUrl("/api/" + this->ResponseType, parameters);
   if (!method.isEmpty())
     {
     url.addQueryItem("method", method);
-    }
-  foreach(const QString& parameter, parameters.keys())
-    {
-    url.addQueryItem(parameter, parameters[parameter]);
     }
   return url;
 }
@@ -122,16 +118,15 @@ void qMidasAPI::setMidasUrl(const QString& newMidasUrl)
 // --------------------------------------------------------------------------
 QList<QVariantMap> qMidasAPI::synchronousQuery(
   bool &ok,
-  const QString& serverUrl,const QString& method,
+  const QString& serverUrl,
+  const QString& method,
   const ParametersType& parameters,
-  const RawHeadersType& rawHeaders,
   int maxWaitingTimeInMSecs)
 {
   qMidasAPI restAPI;
   restAPI.setServerUrl(serverUrl);
-  restAPI.setSuppressSslErrors(true);
   restAPI.setTimeOut(maxWaitingTimeInMSecs);
-  restAPI.query(method, parameters, rawHeaders);
+  restAPI.query(method, parameters);
   qRestAPIResult queryResult;
   QObject::connect(&restAPI, SIGNAL(resultReceived(QUuid,QList<QVariantMap>)),
                    &queryResult, SLOT(setResult(QUuid,QList<QVariantMap>)));

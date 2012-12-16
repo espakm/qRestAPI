@@ -18,16 +18,6 @@
 
 ==============================================================================*/
 
-// Qt includes
-#include <QDebug>
-#include <QEventLoop>
-#include <QScriptValueIterator>
-#include <QSslSocket>
-#include <QStringList>
-#include <QTimer>
-#include <QUuid>
-#include <QDebug>
-
 // qXnatAPI includes
 #include "qXnatAPI.h"
 #include "qXnatAPI_p.h"
@@ -44,17 +34,10 @@ qXnatAPIPrivate::qXnatAPIPrivate(qXnatAPI* object)
 
 // --------------------------------------------------------------------------
 QUrl qXnatAPIPrivate
-::createUrl(const QString& method, const qRestAPI::ParametersType& parameters)
+::createUrl(const QString& resource, const qRestAPI::ParametersType& parameters)
 {
-  qDebug() << "qXnatAPIPrivate::createUrl(const QString& method, const qRestAPI::ParametersType& parameters)";
-  QUrl url(this->ServerUrl + "/REST" + method);
-//  QUrl url(this->ServerUrl + method);
+  QUrl url = Superclass::createUrl(resource, parameters);
   url.addQueryItem("format", this->ResponseType);
-  qDebug() << url;
-  foreach(const QString& parameter, parameters.keys())
-    {
-    url.addQueryItem(parameter, parameters[parameter]);
-    }
   return url;
 }
 

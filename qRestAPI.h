@@ -84,14 +84,13 @@ public:
   /// resultReceived() is emitted when a result is received from the server,
   /// it is fired even if errors are received.
   /// Returns a unique identifiant of the posted query.
-  QUuid query(const QString& method,
+  QUuid query(const QString& resource,
     const ParametersType& parameters = ParametersType(),
     const RawHeadersType& rawHeaders = RawHeadersType());
 
   QList<QVariantMap> synchronousQuery(bool &ok,
-    const QString& method, const ParametersType& parameters = ParametersType(),
-    const RawHeadersType& rawHeaders = RawHeadersType(),
-    int maxWaitingTimeInMSecs = 2500);
+    const QString& resource, const ParametersType& parameters = ParametersType(),
+    const RawHeadersType& rawHeaders = RawHeadersType());
 
   /// Utility function that transforms a QList of QVariantMap into a string.
   /// Mostly for debug purpose.

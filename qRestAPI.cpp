@@ -26,7 +26,6 @@
 #include <QStringList>
 #include <QTimer>
 #include <QUuid>
-#include <QDebug>
 
 // qRestAPI includes
 #include "qRestAPI.h"
@@ -72,11 +71,11 @@ void qRestAPIPrivate::init()
   QObject::connect(this->NetworkManager, SIGNAL(finished(QNetworkReply*)),
                    this, SLOT(processReply(QNetworkReply*)));
 #ifndef QT_NO_OPENSSL
-//  if (QSslSocket::supportsSsl())
-//    {
+  if (QSslSocket::supportsSsl())
+    {
     QObject::connect(this->NetworkManager, SIGNAL(sslErrors(QNetworkReply*, QList<QSslError>)),
           this, SLOT(onSslErrors(QNetworkReply*, QList<QSslError>)));
-//    }
+    }
 #endif
 #if 0
   QObject::connect(q, SIGNAL(errorReceived(QString)),
@@ -87,14 +86,9 @@ void qRestAPIPrivate::init()
 }
 
 // --------------------------------------------------------------------------
-QUrl qRestAPIPrivate::createUrl(const QString& method, const qRestAPI::ParametersType& parameters)
+QUrl qRestAPIPrivate::createUrl(const QString& resource, const qRestAPI::ParametersType& parameters)
 {
-  qDebug() << "qRestAPIPrivate::createUrl(const QString& method, const qRestAPI::ParametersType& parameters)";
-  QUrl url(this->ServerUrl + "/api/" + this->ResponseType);
-  if (!method.isEmpty())
-    {
-    url.addQueryItem("method", method);
-    }
+  QUrl url(this->ServerUrl + resource);
   foreach(const QString& parameter, parameters.keys())
     {
     url.addQueryItem(parameter, parameters[parameter]);
@@ -167,7 +161,6 @@ void qRestAPIPrivate::appendScriptValueToVariantMapList(QList<QVariantMap>& resu
 // --------------------------------------------------------------------------
 QList<QVariantMap> qRestAPIPrivate::parseResult(const QScriptValue& scriptValue)
 {
-  qDebug() << "qRestAPIPrivate::parseResult(const QScriptValue& scriptValue)";
   QList<QVariantMap> result;
   return result;
 }
@@ -187,7 +180,6 @@ void qRestAPIPrivate::processReply(QNetworkReply* reply)
     this->ScriptEngine.evaluate("(" + QString(reply->readAll()) + ")");
   q->emit infoReceived(QString("Parse results for ") + uuid);
   QList<QVariantMap> result = this->parseResult(scriptResult);
-//  QList<QVariantMap> result = this->parseXnatResult(scriptResult);
   q->emit infoReceived(QString("Results for ") + uuid.toString()
                        + ": " + q->qVariantMapListToString(result));
   q->emit resultReceived(uuid, result);
@@ -198,7 +190,6 @@ void qRestAPIPrivate::processReply(QNetworkReply* reply)
 #ifndef QT_NO_OPENSSL
 void qRestAPIPrivate::onSslErrors(QNetworkReply* reply, const QList<QSslError>& errors)
 {
-  qDebug() << "qRestAPIPrivate::onSslErrors(QNetworkReply* reply, const QList<QSslError>& errors)";
   Q_Q(qRestAPI);
   QString errorString;
   foreach (const QSslError& error, errors)
@@ -270,8 +261,8 @@ qRestAPI::qRestAPI(QObject* _parent)
 {
   Q_D(qRestAPI);
   d->init();
-  qRegisterMetaType<QUuid>("QUuid");
-  qRegisterMetaType<QList<QVariantMap> >("QList<QVariantMap>");
+//  qRegisterMetaType<QUuid>("QUuid");
+//  qRegisterMetaType<QList<QVariantMap> >("QList<QVariantMap>");
 }
 
 qRestAPI::qRestAPI(qRestAPIPrivate* ptr, QObject* _parent)
@@ -346,25 +337,21 @@ void qRestAPI::setSuppressSslErrors(bool suppressSslErrors)
 }
 
 // --------------------------------------------------------------------------
-QUuid qRestAPI::query(const QString& method, const ParametersType& parameters, const qRestAPI::RawHeadersType& rawHeaders)
+QUuid qRestAPI::query(const QString& resource, const ParametersType& parameters, const qRestAPI::RawHeadersType& rawHeaders)
 {
   Q_D(qRestAPI);
-  QUrl url = d->createUrl(method, parameters);
+  QUrl url = d->createUrl(resource, parameters);
   return d->postQuery(url, rawHeaders);
 }
 
 // --------------------------------------------------------------------------
 QList<QVariantMap> qRestAPI::synchronousQuery(
   bool &ok,
-  const QString& method,
+  const QString& resource,
   const ParametersType& parameters,
-  const RawHeadersType& rawHeaders,
-  int maxWaitingTimeInMSecs)
+  const RawHeadersType& rawHeaders)
 {
-  this->setSuppressSslErrors(true);
-  this->setTimeOut(maxWaitingTimeInMSecs);
-  qDebug() << " qRestAPI::synchronousQuery() method: " << method;
-  this->query(method, parameters, rawHeaders);
+  this->query(resource, parameters, rawHeaders);
   qRestAPIResult queryResult;
   QObject::connect(this, SIGNAL(resultReceived(QUuid,QList<QVariantMap>)),
                    &queryResult, SLOT(setResult(QUuid,QList<QVariantMap>)));
