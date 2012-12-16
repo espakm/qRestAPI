@@ -51,8 +51,8 @@ public:
   explicit qMidasAPI(QObject*parent = 0);
   virtual ~qMidasAPI();
 
+  /// @deprecated Use qRestAPI::Parameters.
   typedef Parameters ParametersType;
-  typedef RawHeaders RawHeadersType;
 
   QString midasUrl()const;
   void setMidasUrl(const QString& newMidasUrl);
