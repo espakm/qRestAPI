@@ -21,15 +21,6 @@
 #ifndef __qMidasAPI_p_h
 #define __qMidasAPI_p_h
 
-// Qt includes
-#include <QHash>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
-#ifndef QT_NO_OPENSSL
-  #include <QSslError>
-#endif
-#include <QScriptEngine>
-
 // qMidasAPI includes
 #include "qRestAPI_p.h"
 #include "qMidasAPI.h"

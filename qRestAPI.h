@@ -22,7 +22,6 @@
 #define __qRestAPI_h
 
 // Qt includes
-#include <QMap>
 #include <QObject>
 #include <QUuid>
 #include <QVariant>

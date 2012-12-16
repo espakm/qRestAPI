@@ -42,10 +42,12 @@ class qMidasAPI : public qRestAPI
 {
   Q_OBJECT
   /// Url of the Midas server. e.g. "http://slicer.kitware.com/midas3"
+  /// @deprecated Use the serverUrl property
   Q_PROPERTY(QString midasUrl READ midasUrl WRITE setMidasUrl)
 
-public:
   typedef qRestAPI Superclass;
+
+public:
   explicit qMidasAPI(QObject*parent = 0);
   virtual ~qMidasAPI();
 
@@ -61,6 +63,7 @@ public:
   /// If an error is emitted, "queryError" is added to the output.
   /// Internally, a QEventLoop is used so it can have side effects on your
   /// application.
+  /// @deprecated Use the non-static version from qRestAPI.
   static QList<QVariantMap> synchronousQuery(bool &ok,
     const QString& midasUrl,
     const QString& method, const ParametersType& parameters = ParametersType(),

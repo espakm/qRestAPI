@@ -19,14 +19,7 @@
 ==============================================================================*/
 
 // Qt includes
-#include <QDebug>
 #include <QEventLoop>
-#include <QScriptValueIterator>
-#include <QSslSocket>
-#include <QStringList>
-#include <QTimer>
-#include <QUuid>
-#include <QDebug>
 
 // qMidasAPI includes
 #include "qMidasAPI.h"
@@ -45,7 +38,6 @@ qMidasAPIPrivate::qMidasAPIPrivate(qMidasAPI* object)
 // --------------------------------------------------------------------------
 QUrl qMidasAPIPrivate::createUrl(const QString& method, const qRestAPI::ParametersType& parameters)
 {
-  qDebug() << "qMidasAPIPrivate::createUrl(const QString& method, const qMidasAPI::ParametersType& parameters)";
   QUrl url(this->ServerUrl + "/api/" + this->ResponseType);
   if (!method.isEmpty())
     {
@@ -61,7 +53,6 @@ QUrl qMidasAPIPrivate::createUrl(const QString& method, const qRestAPI::Paramete
 // --------------------------------------------------------------------------
 QList<QVariantMap> qMidasAPIPrivate::parseResult(const QScriptValue& scriptValue)
 {
-  qDebug() << "qMidasAPIPrivate::parseResult(const QScriptValue& scriptValue)";
   Q_Q(qMidasAPI);
   // e.g. {"stat":"ok","code":"0","message":"","data":[{"p1":"v1","p2":"v2",...}]}
   QList<QVariantMap> result;
