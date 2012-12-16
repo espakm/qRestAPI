@@ -90,12 +90,6 @@ void qRestAPIPrivate::init()
 QUrl qRestAPIPrivate::createUrl(const QString& method, const qRestAPI::ParametersType& parameters)
 {
   qDebug() << "qRestAPIPrivate::createUrl(const QString& method, const qRestAPI::ParametersType& parameters)";
-  return createUrlMidas(method, parameters);
-}
-
-// --------------------------------------------------------------------------
-QUrl qRestAPIPrivate::createUrlMidas(const QString& method, const qRestAPI::ParametersType& parameters)
-{
   QUrl url(this->ServerUrl + "/api/" + this->ResponseType);
   if (!method.isEmpty())
     {
@@ -174,51 +168,7 @@ void qRestAPIPrivate::appendScriptValueToVariantMapList(QList<QVariantMap>& resu
 QList<QVariantMap> qRestAPIPrivate::parseResult(const QScriptValue& scriptValue)
 {
   qDebug() << "qRestAPIPrivate::parseResult(const QScriptValue& scriptValue)";
-  return parseResultMidas(scriptValue);
-//  QList<QVariantMap> result;
-//  return result;
-}
-
-// --------------------------------------------------------------------------
-QList<QVariantMap> qRestAPIPrivate::parseResultMidas(const QScriptValue& scriptValue)
-{
-  Q_Q(qRestAPI);
-  // e.g. {"stat":"ok","code":"0","message":"","data":[{"p1":"v1","p2":"v2",...}]}
   QList<QVariantMap> result;
-  QScriptValue stat = scriptValue.property("stat");
-  if (stat.toString() != "ok")
-    {
-    QString error = QString("Error while parsing outputs:") +
-      " status: " + scriptValue.property("stat").toString() +
-      " code: " + scriptValue.property("code").toInteger() +
-      " msg: " + scriptValue.property("message").toString();
-    q->emit errorReceived(error);
-    }
-  QScriptValue data = scriptValue.property("data");
-  if (!data.isObject())
-    {
-    if (data.toString().isEmpty())
-      {
-      q->emit errorReceived("No data");
-      }
-    else
-      {
-      q->emit errorReceived( QString("Bad data: ") + data.toString());
-      }
-    }
-  if (data.isArray())
-    {
-    quint32 length = data.property("length").toUInt32();
-    for(quint32 i = 0; i < length; ++i)
-      {
-      appendScriptValueToVariantMapList(result, data.property(i));
-      }
-    }
-  else
-    {
-    appendScriptValueToVariantMapList(result, data);
-    }
-
   return result;
 }
 

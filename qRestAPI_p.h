@@ -49,11 +49,10 @@ public:
   virtual void init();
 
   virtual QUrl createUrl(const QString& method, const qRestAPI::ParametersType& parameters);
-  virtual QUrl createUrlMidas(const QString& method, const qRestAPI::ParametersType& parameters);
+//  virtual QUrl createUrlMidas(const QString& method, const qRestAPI::ParametersType& parameters);
   QUuid postQuery(const QUrl& queryUrl, const qRestAPI::RawHeadersType& rawHeaders = qRestAPI::RawHeadersType());
 
   virtual QList<QVariantMap> parseResult(const QScriptValue& scriptValue);
-  virtual QList<QVariantMap> parseResultMidas(const QScriptValue& scriptValue);
 
   static QString qVariantMapToString(const QList<QVariantMap>& result);
   static QVariantMap scriptValueToMap(const QScriptValue& value);

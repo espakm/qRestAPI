@@ -46,19 +46,22 @@ qMidasAPIPrivate::qMidasAPIPrivate(qMidasAPI* object)
 QUrl qMidasAPIPrivate::createUrl(const QString& method, const qRestAPI::ParametersType& parameters)
 {
   qDebug() << "qMidasAPIPrivate::createUrl(const QString& method, const qMidasAPI::ParametersType& parameters)";
-  return createUrlMidas(method, parameters);
+  QUrl url(this->ServerUrl + "/api/" + this->ResponseType);
+  if (!method.isEmpty())
+    {
+    url.addQueryItem("method", method);
+    }
+  foreach(const QString& parameter, parameters.keys())
+    {
+    url.addQueryItem(parameter, parameters[parameter]);
+    }
+  return url;
 }
 
 // --------------------------------------------------------------------------
 QList<QVariantMap> qMidasAPIPrivate::parseResult(const QScriptValue& scriptValue)
 {
   qDebug() << "qMidasAPIPrivate::parseResult(const QScriptValue& scriptValue)";
-  return parseResultMidas(scriptValue);
-}
-
-// --------------------------------------------------------------------------
-QList<QVariantMap> qMidasAPIPrivate::parseResultMidas(const QScriptValue& scriptValue)
-{
   Q_Q(qMidasAPI);
   // e.g. {"stat":"ok","code":"0","message":"","data":[{"p1":"v1","p2":"v2",...}]}
   QList<QVariantMap> result;
