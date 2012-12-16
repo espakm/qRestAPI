@@ -21,15 +21,6 @@
 #ifndef __qXnatAPI_p_h
 #define __qXnatAPI_p_h
 
-// Qt includes
-#include <QHash>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
-#ifndef QT_NO_OPENSSL
-  #include <QSslError>
-#endif
-#include <QScriptEngine>
-
 // qXnatAPI includes
 #include "qRestAPI_p.h"
 #include "qXnatAPI.h"
@@ -46,7 +37,6 @@ public:
 
   virtual QUrl createUrl(const QString& method, const qRestAPI::ParametersType& parameters);
   virtual QList<QVariantMap> parseResult(const QScriptValue& scriptValue);
-  virtual QList<QVariantMap> parseResultXnat(const QScriptValue& scriptValue);
 };
 
 #endif

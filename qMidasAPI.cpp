@@ -124,3 +124,46 @@ void qMidasAPI::setMidasUrl(const QString& newMidasUrl)
 {
   Superclass::setServerUrl(newMidasUrl);
 }
+
+// --------------------------------------------------------------------------
+QList<QVariantMap> qMidasAPI::synchronousQuery(
+  bool &ok,
+  const QString& serverUrl,const QString& method,
+  const ParametersType& parameters,
+  const RawHeadersType& rawHeaders,
+  int maxWaitingTimeInMSecs)
+{
+  qMidasAPI restAPI;
+  restAPI.setServerUrl(serverUrl);
+  restAPI.setSuppressSslErrors(true);
+  restAPI.setTimeOut(maxWaitingTimeInMSecs);
+  restAPI.query(method, parameters, rawHeaders);
+  qRestAPIResult queryResult;
+  QObject::connect(&restAPI, SIGNAL(resultReceived(QUuid,QList<QVariantMap>)),
+                   &queryResult, SLOT(setResult(QUuid,QList<QVariantMap>)));
+  QObject::connect(&restAPI, SIGNAL(errorReceived(QString)),
+                   &queryResult, SLOT(setError(QString)));
+  QEventLoop eventLoop;
+  QObject::connect(&restAPI, SIGNAL(resultReceived(QUuid,QList<QVariantMap>)),
+                   &eventLoop, SLOT(quit()));
+  // Time out will fire an error which will quit the event loop.
+  QObject::connect(&restAPI, SIGNAL(errorReceived(QString)),
+                   &eventLoop, SLOT(quit()));
+  eventLoop.exec();
+  ok = queryResult.Error.isNull();
+  if (!ok)
+    {
+    QVariantMap map;
+    map["queryError"] = queryResult.Error;
+    queryResult.Result.push_front(map);
+    }
+  if (queryResult.Result.count() == 0)
+    {
+    // \tbd
+    Q_ASSERT(queryResult.Result.count());
+    QVariantMap map;
+    map["queryError"] = tr("Unknown error");
+    queryResult.Result.push_front(map);
+    }
+  return queryResult.Result;
+}

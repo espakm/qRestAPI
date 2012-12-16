@@ -61,12 +61,6 @@ QUrl qXnatAPIPrivate
 // --------------------------------------------------------------------------
 QList<QVariantMap> qXnatAPIPrivate::parseResult(const QScriptValue& scriptValue)
 {
-  return parseResultXnat(scriptValue);
-}
-
-// --------------------------------------------------------------------------
-QList<QVariantMap> qXnatAPIPrivate::parseResultXnat(const QScriptValue& scriptValue)
-{
   Q_Q(qXnatAPI);
   // e.g. {"ResultSet":{"Result": [{"p1":"v1","p2":"v2",...}], "totalRecords":"13"}}
   QList<QVariantMap> result;

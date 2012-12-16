@@ -47,9 +47,6 @@ public:
   explicit qXnatAPI(QObject*parent = 0);
   virtual ~qXnatAPI();
 
-  typedef QMap<QString, QString> ParametersType;
-  typedef QMap<QByteArray, QByteArray> RawHeadersType;
-
 private:
   Q_DECLARE_PRIVATE(qXnatAPI);
   Q_DISABLE_COPY(qXnatAPI);

@@ -89,18 +89,6 @@ public:
     const ParametersType& parameters = ParametersType(),
     const RawHeadersType& rawHeaders = RawHeadersType());
 
-  /// Utility function that waits \a maxWaitingTimeInMSecs msecs for the result
-  /// of the query. Returns the answer of the server or an empty map if the
-  /// result failed.
-  /// If an error is emitted, "queryError" is added to the output.
-  /// Internally, a QEventLoop is used so it can have side effects on your
-  /// application.
-  static QList<QVariantMap> synchronousQuery(bool &ok,
-    const QString& midasUrl,
-    const QString& method, const ParametersType& parameters = ParametersType(),
-    const RawHeadersType& rawHeaders = RawHeadersType(),
-    int maxWaitingTimeInMSecs = 2500);
-
   QList<QVariantMap> synchronousQuery(bool &ok,
     const QString& method, const ParametersType& parameters = ParametersType(),
     const RawHeadersType& rawHeaders = RawHeadersType(),
